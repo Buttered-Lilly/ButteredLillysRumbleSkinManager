@@ -1,4 +1,4 @@
-Put Skins In /UserData/Skins/<insert object name>/<insert texture type>
+Put Skins In /UserData/Skins/(insert object name)/(insert texture type)
 Example: /UserData/Skins/Pillar/Main.png will texture the pillar
 
 
