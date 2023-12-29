@@ -1,8 +1,9 @@
 ﻿using MelonLoader;
 using UnityEngine;
 using System;
-using UnityEditor;
-using static UnityEngine.Rendering.Universal.UniversalRenderPipeline.Profiling.Pipeline;
+using UnityEngine.SceneManagement;
+using RUMBLE.Managers;
+using RUMBLE.Players;
 
 namespace LillysSkinManager
 {
@@ -10,48 +11,47 @@ namespace LillysSkinManager
 	{
 		public byte[] Bytes;
         public Texture2D[] textures = new Texture2D[6];
-        public Texture2D playerMain, playerNormal, playerMat;
-        SkinnedMeshRenderer suit;
+        //public Texture2D playerMain, playerNormal, playerMat;
+        //SkinnedMeshRenderer suit;
 
         string[] types = new string[5];
-        string[] poolPaths = new string[6];
-        string[] texPaths = new string[6];
+        string[] poolPaths = new string[5];
+        string[] texPaths = new string[5];
         bool ran = false;
+        PlayerTexturing playertexturing;
 
         public override void OnLateInitializeMelon()
         {
             base.OnLateInitializeMelon();
 
-            playerMain = null;
-            playerNormal = null;
-            playerMat = null;
+            //playerMain = null;
+            //playerNormal = null;
+            //playerMat = null;
 
-            types[0] = "pillar";
-            types[1] = "wall";
-            types[2] = "disc";
-            types[3] = "cube";
-            types[4] = "ball";
+            types[0] = "Pillar";
+            types[1] = "Wall";
+            types[2] = "Disc";
+            types[3] = "Cube";
+            types[4] = "Ball";
 
             poolPaths[0] = "Game Instance/Pre-Initializable/PoolManager/Pool: Pillar (RUMBLE.MoveSystem.Structure)";
             poolPaths[1] = "Game Instance/Pre-Initializable/PoolManager/Pool: Wall (RUMBLE.MoveSystem.Structure)";
             poolPaths[2] = "Game Instance/Pre-Initializable/PoolManager/Pool: Disc (RUMBLE.MoveSystem.Structure)";
             poolPaths[3] = "Game Instance/Pre-Initializable/PoolManager/Pool: RockCube (RUMBLE.MoveSystem.Structure)";
             poolPaths[4] = "Game Instance/Pre-Initializable/PoolManager/Pool: Ball (RUMBLE.MoveSystem.Structure)";
-            poolPaths[5] = "Game Instance/Pre-Initializable/PoolManager/Pool: BoulderBall (RUMBLE.MoveSystem.Structure)";
 
             texPaths[0] = "/Skins/Pillar/";
             texPaths[1] = "/Skins/Wall/";
             texPaths[2] = "/Skins/Disc/";
             texPaths[3] = "/Skins/Cube/";
             texPaths[4] = "/Skins/Ball/";
-            texPaths[5] = "/Skins/Ball/";
 
             MelonLogger.Msg("Passed init");
         }
 
         public override void OnSceneWasLoaded(int buildIndex, string sceneName)
         {
-            suit = null;
+            /*suit = null;
             if (sceneName != "Loader")
             {
                 try
@@ -98,20 +98,28 @@ namespace LillysSkinManager
                 {
                     MelonLogger.Msg(ex.Message);
                 }
-            }
+            }*/
             if (ran)
             {
+                playertexturing.OnSceneLoaded(sceneName);
                 return;
             }
             else
             {
                 ran = true;
                 MelonLogger.Msg("Loading Textures");
-                loadTex();
+                ApplyStructureScriptTex();
+                ApplyPlayerScriptTex();
             }
         }
 
-        void loadTex()
+        void ApplyPlayerScriptTex()
+        {
+            GameObject playerManager = GameObject.Find("Game Instance/Initializable/PlayerManager");
+            playertexturing = playerManager.AddComponent<PlayerTexturing>();
+        }
+
+        void ApplyStructureScriptTex()
         {
             try
             {
@@ -122,7 +130,7 @@ namespace LillysSkinManager
                         textures[n] = null;
                     }*/
                     GameObject pool = GameObject.Find(poolPaths[i]).gameObject;
-                    Child g = pool.gameObject.AddComponent<Child>();
+                    StructureTextureing g = pool.gameObject.AddComponent<StructureTextureing>();
                     //g.tex = textures;
                     g.type = types[i];
                     g.typeInt = i;
@@ -134,9 +142,9 @@ namespace LillysSkinManager
     }
 
     [RegisterTypeInIl2Cpp]
-    public class Child : MonoBehaviour
+    public class StructureTextureing : MonoBehaviour
     {
-        public Child(IntPtr ptr) : base(ptr) { }
+        public StructureTextureing(IntPtr ptr) : base(ptr) { }
 
         public string type;
         public int typeInt;
@@ -145,13 +153,11 @@ namespace LillysSkinManager
         private Texture2D texNormal, texMain, texMat, texGrounded;
         private byte[] Bytes;
         private int lastCount;
-        private Material temp;
 
         void Start()
         {
             if (texNormal != null || texMain != null || texMat != null || texGrounded != null)
                 return;
-            temp = gameObject.transform.GetChild(lastCount).gameObject.transform.GetChild(0).GetComponent<MeshRenderer>().sharedMaterial;
             if (System.IO.File.Exists(texPath + "Normal.png"))
             {
                 texNormal = new Texture2D(2, 2);
@@ -184,6 +190,18 @@ namespace LillysSkinManager
             Preploaded();
         }
 
+
+        System.Collections.IEnumerator delayTex()
+        {
+            MeshRenderer meshRenderer;
+            yield return new WaitForFixedUpdate();
+            yield return new WaitForFixedUpdate();
+            yield return new WaitForFixedUpdate();
+            yield return new WaitForFixedUpdate();
+            meshRenderer = gameObject.transform.GetChild(lastCount).gameObject.transform.GetChild(0).GetComponent<MeshRenderer>();
+            updateTex(meshRenderer);
+        }
+
         void Preploaded()
         {
             MeshRenderer meshRenderer;
@@ -206,14 +224,13 @@ namespace LillysSkinManager
 
         public void OnTransformChildrenChanged()
         {
-            Preploaded();
+            MelonCoroutines.Start(delayTex());
+            //Preploaded();
         }
 
-        void updateTex()
+        void updateTex(MeshRenderer meshRenderer)
         {
             MelonLogger.Msg("Child Being Updated");
-            MeshRenderer meshRenderer;
-            meshRenderer = gameObject.transform.GetChild(lastCount).gameObject.transform.GetChild(0).GetComponent<MeshRenderer>();
             MaterialPropertyBlock block = new MaterialPropertyBlock();
             meshRenderer.GetPropertyBlock(block);
             if (texNormal != null)
@@ -225,6 +242,119 @@ namespace LillysSkinManager
             if (texGrounded != null)
                 block.SetTexture("_GroundTexture", texGrounded);
             meshRenderer.SetPropertyBlock(block);
+            lastCount++;
+        }
+    }
+
+    [RegisterTypeInIl2Cpp]
+    public class PlayerTexturing : MonoBehaviour
+    {
+        public PlayerTexturing(IntPtr ptr) : base(ptr) { }
+
+        private RUMBLE.Managers.PlayerManager playerManager;
+        Player player = null;
+        private Texture2D playerMain, playerNormal, playerMat;
+        private byte[] Bytes;
+
+        void Start()
+        {
+            if (System.IO.File.Exists(MelonUtils.UserDataDirectory + "/Skins/Player/Normal.png"))
+            {
+                playerNormal = new Texture2D(2, 2);
+                Bytes = System.IO.File.ReadAllBytes(MelonUtils.UserDataDirectory + "/Skins/Player/Normal.png");
+                ImageConversion.LoadImage(playerNormal, Bytes);
+                playerNormal.hideFlags = HideFlags.HideAndDontSave;
+            }
+            if (System.IO.File.Exists(MelonUtils.UserDataDirectory + "/Skins/Player/Main.png"))
+            {
+                playerMain = new Texture2D(2, 2);
+                Bytes = System.IO.File.ReadAllBytes(MelonUtils.UserDataDirectory + "/Skins/Player/Main.png");
+                ImageConversion.LoadImage(playerMain, Bytes);
+                playerMain.hideFlags = HideFlags.HideAndDontSave;
+            }
+            if (System.IO.File.Exists(MelonUtils.UserDataDirectory + "/Skins/Player/Mat.png"))
+            {
+                playerMat = new Texture2D(2, 2);
+                Bytes = System.IO.File.ReadAllBytes(MelonUtils.UserDataDirectory + "/Skins/Player/Mat.png");
+                ImageConversion.LoadImage(playerMat, Bytes);
+                playerMat.hideFlags = HideFlags.HideAndDontSave;
+            }
+            playerManager = this.gameObject.GetComponent<RUMBLE.Managers.PlayerManager>();
+        }
+
+        void updateTex(SkinnedMeshRenderer suit)
+        {
+            try
+            {
+                MelonLogger.Msg("trying to skin player");
+                MaterialPropertyBlock block = new MaterialPropertyBlock();
+                suit.GetPropertyBlock(block);
+                if (playerMain != null)
+                {
+                    block.SetTexture("_Color_Map", playerMain);
+                }
+                if (playerMat != null)
+                {
+                    block.SetTexture("_Metal_Map", playerMat);
+                }
+                if (playerNormal != null)
+                {
+                    block.SetTexture("_Normal_Map", playerNormal);
+                }
+                suit.SetPropertyBlock(block);
+            }
+            catch (Exception e)
+            {
+                MelonLogger.Msg(e.ToString());
+                MelonCoroutines.Start(delayTex());
+            }
+        }
+
+        System.Collections.IEnumerator delayTex()
+        {
+            yield return new WaitForFixedUpdate();
+            yield return new WaitForFixedUpdate();
+            yield return new WaitForFixedUpdate();
+            yield return new WaitForFixedUpdate();
+            yield return new WaitForFixedUpdate();
+            yield return new WaitForFixedUpdate();
+            yield return new WaitForFixedUpdate();
+            yield return new WaitForFixedUpdate();
+            yield return new WaitForFixedUpdate();
+            yield return new WaitForFixedUpdate();
+            yield return new WaitForFixedUpdate();
+            yield return new WaitForFixedUpdate();
+            try
+            {
+                SkinnedMeshRenderer suit = null;
+                /*if(player == null)
+                {
+                    player = playerManager.LocalPlayer;
+                }*/
+                suit = playerManager.LocalPlayer.Controller.gameObject.transform.Find("Visuals/Suit").GetComponent<SkinnedMeshRenderer>();
+                updateTex(suit);
+            }
+            catch (Exception e)
+            {
+                MelonLogger.Msg(e.ToString());
+                MelonCoroutines.Start(delayTex());
+            }
+        }
+
+        public void OnSceneLoaded(string sceneName)
+        {
+            if(sceneName != "Loader")
+            {
+                try
+                {
+                    MelonLogger.Msg("trying to find local player");
+                    MelonCoroutines.Start(delayTex());
+                }
+                catch(Exception e)
+                {
+                    MelonLogger.Msg(e.ToString());
+                }
+            }
         }
     }
 }
