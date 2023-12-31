@@ -252,56 +252,87 @@ namespace LillysSkinManager
         public PlayerTexturing(IntPtr ptr) : base(ptr) { }
 
         private RUMBLE.Managers.PlayerManager playerManager;
-        Player player = null;
-        private Texture2D playerMain, playerNormal, playerMat;
         private byte[] Bytes;
+
+        private const int texCount = 9;
+        private Texture2D[] playerTextures = new Texture2D[texCount];
+        private string[] filetypes = new string[texCount];
+        private string[] texProps = new string[texCount];
+        private string[] objectPaths = new string[texCount];
 
         void Start()
         {
-            if (System.IO.File.Exists(MelonUtils.UserDataDirectory + "/Skins/Player/Normal.png"))
+            filetypes[0] = "Suit/Main";
+            filetypes[1] = "Suit/Mat";
+            filetypes[2] = "Suit/Normal";
+            filetypes[3] = "Shiftsocket/Main_R";
+            filetypes[4] = "Shiftsocket/Mat_R";
+            filetypes[5] = "Shiftsocket/Normal_R";
+            filetypes[6] = "Shiftsocket/Main_L";
+            filetypes[7] = "Shiftsocket/Mat_L";
+            filetypes[8] = "Shiftsocket/Normal_L";
+
+            texProps[0] = "_Color_Map";
+            texProps[1] = "_Metal_Map";
+            texProps[2] = "_Normal_Map";
+            texProps[3] = "_Color_Map";
+            texProps[4] = "_Metal_Map";
+            texProps[5] = "_Normal_Map";
+            texProps[6] = "_Color_Map";
+            texProps[7] = "_Metal_Map";
+            texProps[8] = "_Normal_Map";
+
+            objectPaths[0] = "Visuals/Suit";
+            objectPaths[1] = "Visuals/Suit";
+            objectPaths[2] = "Visuals/Suit";
+            objectPaths[3] = "Visuals/RIG/Bone_Pelvis/Bone_Spine/Bone_Chest/Bone_Shoulderblade_R/Bone_Shoulder_R/Bone_Lowerarm_R/Bone_Hand_R/ShiftstoneSocket_R/Shiftsocket";
+            objectPaths[4] = "Visuals/RIG/Bone_Pelvis/Bone_Spine/Bone_Chest/Bone_Shoulderblade_R/Bone_Shoulder_R/Bone_Lowerarm_R/Bone_Hand_R/ShiftstoneSocket_R/Shiftsocket";
+            objectPaths[5] = "Visuals/RIG/Bone_Pelvis/Bone_Spine/Bone_Chest/Bone_Shoulderblade_R/Bone_Shoulder_R/Bone_Lowerarm_R/Bone_Hand_R/ShiftstoneSocket_R/Shiftsocket";
+            objectPaths[6] = "Visuals/RIG/Bone_Pelvis/Bone_Spine/Bone_Chest/Bone_Shoulderblade_L/Bone_Shoulder_L/Bone_Lowerarm_L/Bone_Hand_L/ShiftstoneSocket_L/Shiftsocket";
+            objectPaths[7] = "Visuals/RIG/Bone_Pelvis/Bone_Spine/Bone_Chest/Bone_Shoulderblade_L/Bone_Shoulder_L/Bone_Lowerarm_L/Bone_Hand_L/ShiftstoneSocket_L/Shiftsocket";
+            objectPaths[8] = "Visuals/RIG/Bone_Pelvis/Bone_Spine/Bone_Chest/Bone_Shoulderblade_L/Bone_Shoulder_L/Bone_Lowerarm_L/Bone_Hand_L/ShiftstoneSocket_L/Shiftsocket";
+
+            for (int i = 0; i < playerTextures.Length; i++)
             {
-                playerNormal = new Texture2D(2, 2);
-                Bytes = System.IO.File.ReadAllBytes(MelonUtils.UserDataDirectory + "/Skins/Player/Normal.png");
-                ImageConversion.LoadImage(playerNormal, Bytes);
-                playerNormal.hideFlags = HideFlags.HideAndDontSave;
-            }
-            if (System.IO.File.Exists(MelonUtils.UserDataDirectory + "/Skins/Player/Main.png"))
-            {
-                playerMain = new Texture2D(2, 2);
-                Bytes = System.IO.File.ReadAllBytes(MelonUtils.UserDataDirectory + "/Skins/Player/Main.png");
-                ImageConversion.LoadImage(playerMain, Bytes);
-                playerMain.hideFlags = HideFlags.HideAndDontSave;
-            }
-            if (System.IO.File.Exists(MelonUtils.UserDataDirectory + "/Skins/Player/Mat.png"))
-            {
-                playerMat = new Texture2D(2, 2);
-                Bytes = System.IO.File.ReadAllBytes(MelonUtils.UserDataDirectory + "/Skins/Player/Mat.png");
-                ImageConversion.LoadImage(playerMat, Bytes);
-                playerMat.hideFlags = HideFlags.HideAndDontSave;
+                if (System.IO.File.Exists(MelonUtils.UserDataDirectory + "/Skins/Player/" + filetypes[i] + ".png"))
+                {
+                    playerTextures[i] = new Texture2D(2, 2);
+                    Bytes = System.IO.File.ReadAllBytes(MelonUtils.UserDataDirectory + "/Skins/Player/" + filetypes[i] + ".png");
+                    ImageConversion.LoadImage(playerTextures[i], Bytes);
+                    playerTextures[i].hideFlags = HideFlags.HideAndDontSave;
+                }
+                else
+                {
+                    playerTextures[i] = null;
+                }
             }
             playerManager = this.gameObject.GetComponent<RUMBLE.Managers.PlayerManager>();
         }
 
-        void updateTex(SkinnedMeshRenderer suit)
+        void updateTex(GameObject localPlayer)
         {
             try
             {
                 MelonLogger.Msg("trying to skin player");
                 MaterialPropertyBlock block = new MaterialPropertyBlock();
-                suit.GetPropertyBlock(block);
-                if (playerMain != null)
+                Renderer skinned = localPlayer.transform.Find(objectPaths[0]).GetComponent<Renderer>();
+                string last = objectPaths[0];
+                skinned.GetPropertyBlock(block);
+                for (int i = 0; i < playerTextures.Length; i++)
                 {
-                    block.SetTexture("_Color_Map", playerMain);
+                    if (objectPaths[i] != last)
+                    {
+                        skinned.SetPropertyBlock(block);
+                        skinned = localPlayer.transform.Find(objectPaths[i]).GetComponent<Renderer>();
+                        skinned.GetPropertyBlock(block);
+                    }
+                    if (playerTextures[i] != null)
+                    {
+                        block.SetTexture(texProps[i], playerTextures[i]);
+                    }
+                    last = objectPaths[i];
                 }
-                if (playerMat != null)
-                {
-                    block.SetTexture("_Metal_Map", playerMat);
-                }
-                if (playerNormal != null)
-                {
-                    block.SetTexture("_Normal_Map", playerNormal);
-                }
-                suit.SetPropertyBlock(block);
+                skinned.SetPropertyBlock(block);
             }
             catch (Exception e)
             {
@@ -326,13 +357,9 @@ namespace LillysSkinManager
             yield return new WaitForFixedUpdate();
             try
             {
-                SkinnedMeshRenderer suit = null;
-                /*if(player == null)
-                {
-                    player = playerManager.LocalPlayer;
-                }*/
-                suit = playerManager.LocalPlayer.Controller.gameObject.transform.Find("Visuals/Suit").GetComponent<SkinnedMeshRenderer>();
-                updateTex(suit);
+                GameObject player = null;
+                player = playerManager.LocalPlayer.Controller.gameObject;
+                updateTex(player);
             }
             catch (Exception e)
             {
