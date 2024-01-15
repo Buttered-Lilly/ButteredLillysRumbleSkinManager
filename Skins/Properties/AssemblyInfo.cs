@@ -4,7 +4,7 @@ using MelonLoader;
 using LillysSkinManager;
 
 // ...
-[assembly: MelonInfo(typeof(SkinManager), "Lilly's Skins", "1.0.0", "Lilly")]
+[assembly: MelonInfo(typeof(_SkinManager), "Lilly's Skins", "1.0.0", "Lilly")]
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
