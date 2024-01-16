@@ -5,6 +5,10 @@ using UnityEngine;
 using RUMBLE.Managers;
 using RUMBLE.Players;
 using RUMBLE.MoveSystem;
+using RUMBLE.Players.Subsystems;
+using LillysSkinManager;
+using Photon.Pun;
+using System.Management.Instrumentation;
 
 namespace Skins
 {
@@ -13,7 +17,8 @@ namespace Skins
         public static string[] types = new string[5];
         string[] texTypes = new string[4];
         string[] texPaths = new string[5];
-        Texture2D[][] textures = new Texture2D[5][];
+        Texture2D[][] texturesLocal = new Texture2D[5][];
+        Texture2D[][] texturesRemote = new Texture2D[5][];
         private byte[] Bytes;
         public static Structure_Texturing Struc;
 
@@ -37,30 +42,49 @@ namespace Skins
             texTypes[2] = "Mat";
             texTypes[3] = "Grounded";
 
-            for (int i = 0; i < textures.Length; i++)
+            for (int i = 0; i < texturesLocal.Length; i++)
             {
-                textures[i] = new Texture2D[4];
+                texturesLocal[i] = new Texture2D[4];
+                texturesRemote[i] = new Texture2D[4];
 
                 for (int x = 0; x < texTypes.Length; x++)
                 {
                     if (System.IO.File.Exists(MelonUtils.UserDataDirectory + texPaths[i] + texTypes[x] + ".png"))
                     {
-                        textures[i][x] = new Texture2D(2, 2);
+                        texturesLocal[i][x] = new Texture2D(2, 2);
                         Bytes = System.IO.File.ReadAllBytes(MelonUtils.UserDataDirectory + texPaths[i] + texTypes[x] + ".png");
-                        ImageConversion.LoadImage(textures[i][x], Bytes);
-                        textures[i][x].hideFlags = HideFlags.HideAndDontSave;
+                        ImageConversion.LoadImage(texturesLocal[i][x], Bytes);
+                        texturesLocal[i][x].hideFlags = HideFlags.HideAndDontSave;
                     }
                     else
                     {
-                        textures[i][x] = null;
+                        texturesLocal[i][x] = null;
                     }
+                    /*if (System.IO.File.Exists(MelonUtils.UserDataDirectory + texPaths[i] + texTypes[x] + "_Alt.png"))
+                    {
+                        texturesRemote[i][x] = new Texture2D(2, 2);
+                        Bytes = System.IO.File.ReadAllBytes(MelonUtils.UserDataDirectory + texPaths[i] + texTypes[x] + "_Alt.png");
+                        ImageConversion.LoadImage(texturesRemote[i][x], Bytes);
+                        texturesRemote[i][x].hideFlags = HideFlags.HideAndDontSave;
+                    }
+                    else
+                    {
+                        texturesRemote[i][x] = texturesLocal[i][x];
+                        if (texturesRemote[i][x] != null)
+                            texturesRemote[i][x].hideFlags = HideFlags.HideAndDontSave;
+                    }*/
                 }
             }
             MelonLogger.Msg("Structures Passed File loading");
         }
 
-        public void texture(GameObject obj, int type)
+        public void texture(GameObject obj, int type, bool isLocal)
         {
+            Texture2D[][] textures;
+            if (isLocal)
+                textures = texturesLocal;
+            else
+                textures = texturesRemote;
             MeshRenderer meshRenderer = obj.GetComponent<MeshRenderer>();
             MaterialPropertyBlock block = new MaterialPropertyBlock();
             meshRenderer.GetPropertyBlock(block);
@@ -80,22 +104,36 @@ namespace Skins
         {
             private static void Postfix(ref Structure __instance)
             {
+                //MelonLogger.Msg("stuc spawned");
                 int index;
                 GameObject obj;
+                bool isLocal = true;
                 try
                 {
+                    //MelonLogger.Msg("checking if on list");
                     index = Array.IndexOf(types, __instance.processableComponent.gameObject.name);
+                    if (index < 0 || __instance.isSceneStructure)
+                    {
+                        //MelonLogger.Msg("not on list");
+                        return;
+                    }
+                    //MelonLogger.Msg("getting object");
                     obj = __instance.processableComponent.gameObject.transform.GetChild(0).gameObject;
+                    //PlayerControllerSubsystem.
+                    //__instance.processableComponent.latestInfluencedProcessor;
+                    //MelonLogger.Msg("getting is local");
+                    //MelonLogger.Msg("is mine: " + __instance.processableComponent.gameObject.GetComponent<PhotonView>().IsMine);
+                    //isLocal = __instance.processableComponent.gameObject.GetComponent<PhotonView>().IsMine;
+                    //isLocal = true;
+                    //isLocal = __instance.processableComponent.gameObject.GetComponent<>
                 }
                 catch (Exception e)
                 {
+                    MelonLogger.Msg(e);
                     return;
                 }
-                if (index < 0)
-                {
-                    return;
-                }
-                Struc.texture(obj, index);
+                //MelonLogger.Msg(isLocal);
+                Struc.texture(obj, index, isLocal);
             }
         }
     }

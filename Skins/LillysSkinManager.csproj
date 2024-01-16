@@ -46,6 +46,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>S:\___appdata\Roaming\Thunderstore Mod Manager\DataFolder\RUMBLE\profiles\Default\MelonLoader\Managed\Assembly-CSharp.dll</HintPath>
     </Reference>
+    <Reference Include="BucketheadEntertainment.Plugins, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>S:\___appdata\Roaming\Thunderstore Mod Manager\DataFolder\RUMBLE\profiles\Default\MelonLoader\Managed\BucketheadEntertainment.Plugins.dll</HintPath>
+    </Reference>
     <Reference Include="Il2Cppmscorlib, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>S:\___appdata\Roaming\Thunderstore Mod Manager\DataFolder\RUMBLE\profiles\Default\MelonLoader\Managed\Il2Cppmscorlib.dll</HintPath>
@@ -56,6 +60,46 @@
     <Reference Include="MelonLoader, Version=0.5.7.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>S:\___appdata\Roaming\Thunderstore Mod Manager\DataFolder\RUMBLE\profiles\Default\MelonLoader\MelonLoader.dll</HintPath>
+    </Reference>
+    <Reference Include="Photon3Unity3D, Version=4.1.6.9, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>S:\___appdata\Roaming\Thunderstore Mod Manager\DataFolder\RUMBLE\profiles\Default\MelonLoader\Managed\Photon3Unity3D.dll</HintPath>
+    </Reference>
+    <Reference Include="PhotonChat, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>S:\___appdata\Roaming\Thunderstore Mod Manager\DataFolder\RUMBLE\profiles\Default\MelonLoader\Managed\PhotonChat.dll</HintPath>
+    </Reference>
+    <Reference Include="PhotonRealtime, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>S:\___appdata\Roaming\Thunderstore Mod Manager\DataFolder\RUMBLE\profiles\Default\MelonLoader\Managed\PhotonRealtime.dll</HintPath>
+    </Reference>
+    <Reference Include="PhotonUnityNetworking, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>S:\___appdata\Roaming\Thunderstore Mod Manager\DataFolder\RUMBLE\profiles\Default\MelonLoader\Managed\PhotonUnityNetworking.dll</HintPath>
+    </Reference>
+    <Reference Include="PhotonUnityNetworking.Utilities">
+      <HintPath>S:\___appdata\Roaming\Thunderstore Mod Manager\DataFolder\RUMBLE\profiles\Default\MelonLoader\Managed\PhotonUnityNetworking.Utilities.dll</HintPath>
+    </Reference>
+    <Reference Include="PhotonUtilities">
+      <HintPath>S:\___appdata\Roaming\Thunderstore Mod Manager\DataFolder\RUMBLE\profiles\Default\MelonLoader\Managed\PhotonUtilities.dll</HintPath>
+    </Reference>
+    <Reference Include="PhotonVoice, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>S:\___appdata\Roaming\Thunderstore Mod Manager\DataFolder\RUMBLE\profiles\Default\MelonLoader\Managed\PhotonVoice.dll</HintPath>
+    </Reference>
+    <Reference Include="PhotonVoice.API, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>S:\___appdata\Roaming\Thunderstore Mod Manager\DataFolder\RUMBLE\profiles\Default\MelonLoader\Managed\PhotonVoice.API.dll</HintPath>
+    </Reference>
+    <Reference Include="PhotonVoice.PUN">
+      <HintPath>S:\___appdata\Roaming\Thunderstore Mod Manager\DataFolder\RUMBLE\profiles\Default\MelonLoader\Managed\PhotonVoice.PUN.dll</HintPath>
+    </Reference>
+    <Reference Include="PhotonWebSocket">
+      <HintPath>S:\___appdata\Roaming\Thunderstore Mod Manager\DataFolder\RUMBLE\profiles\Default\MelonLoader\Managed\PhotonWebSocket.dll</HintPath>
+    </Reference>
+    <Reference Include="PlayFab, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>S:\___appdata\Roaming\Thunderstore Mod Manager\DataFolder\RUMBLE\profiles\Default\MelonLoader\Managed\PlayFab.dll</HintPath>
     </Reference>
     <Reference Include="RUMBLE.AssetStore">
       <HintPath>S:\___appdata\Roaming\Thunderstore Mod Manager\DataFolder\RUMBLE\profiles\Default\MelonLoader\Managed\RUMBLE.AssetStore.dll</HintPath>
