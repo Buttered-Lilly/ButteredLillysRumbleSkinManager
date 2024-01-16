@@ -27,6 +27,8 @@ Mat.png
 
 Grounded.png
 
+Add _Alt to the end of the texture type to skin other players
+
 For Shift Stones Add _L or _R To The Texture Name
 
 # Help And Other Resources
